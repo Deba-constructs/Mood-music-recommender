@@ -14,13 +14,21 @@ def load_model():
 
 model, vectorizer = load_model()
 
+# All 13 labels from the dataset
 mood_music = {
-    "happiness": ("🎶 You're feeling great!", ["Pop hits", "Party songs", "Dance music"]),
-    "sadness": ("🎧 Take it slow", ["Soft acoustic", "Emotional songs", "Lo-fi beats"]),
-    "anger": ("🔥 Release the energy", ["Rock", "Rap", "High BPM tracks"]),
-    "enthusiasm": ("⚡ You're pumped!", ["EDM", "Workout music", "Hype tracks"]),
-    "neutral": ("🌿 Chill mood", ["Indie", "Background music", "Soft playlists"]),
-    "worry": ("🧘 Relax a bit", ["Calm piano", "Meditation music", "Slow instrumentals"])
+    "happiness":  ("🎶 You're feeling great!",      ["Pop hits", "Party songs", "Dance music"]),
+    "sadness":    ("🎧 Take it slow",               ["Soft acoustic", "Emotional songs", "Lo-fi beats"]),
+    "anger":      ("🔥 Release the energy",         ["Rock", "Rap", "High BPM tracks"]),
+    "enthusiasm": ("⚡ You're pumped!",             ["EDM", "Workout music", "Hype tracks"]),
+    "neutral":    ("🌿 Chill mood",                ["Indie", "Background music", "Soft playlists"]),
+    "worry":      ("🧘 Relax a bit",               ["Calm piano", "Meditation music", "Slow instrumentals"]),
+    "love":       ("💖 Feeling romantic",           ["Love songs", "R&B", "Soft pop"]),
+    "surprise":   ("😲 Something unexpected!",     ["Eclectic mix", "Discover Weekly", "New releases"]),
+    "fun":        ("😄 Keep the fun going!",        ["Feel-good hits", "Comedy rap", "Upbeat indie"]),
+    "hate":       ("😤 Shake it off",              ["Punk rock", "Metal", "Vent playlist"]),
+    "boredom":    ("😴 Spice it up",              ["Shuffle mix", "Top charts", "Random genres"]),
+    "relief":     ("😌 Breathe easy",             ["Ambient", "Acoustic chill", "Nature sounds"]),
+    "empty":      ("🌑 Quiet moment",             ["Instrumental", "Post-rock", "Silence fillers"]),
 }
 
 user_input = st.text_input("💭 How are you feeling today?")
@@ -32,7 +40,17 @@ if st.button("🎯 Recommend Music"):
         vec = vectorizer.transform([user_input])
         emotion = model.predict(vec)[0]
 
-        st.success(f"🧠 Detected Mood: **{emotion}**")
+        # Show confidence scores
+        proba = model.predict_proba(vec)[0]
+        confidence = max(proba) * 100
+        top3 = sorted(zip(model.classes_, proba), key=lambda x: x[1], reverse=True)[:3]
+
+        st.success(f"🧠 Detected Mood: **{emotion.capitalize()}** ({confidence:.0f}% confidence)")
+
+        # Show top 3 mood probabilities
+        with st.expander("📊 See mood breakdown"):
+            for label, prob in top3:
+                st.progress(float(prob), text=f"{label.capitalize()}: {prob*100:.1f}%")
 
         title, songs = mood_music.get(
             emotion,
