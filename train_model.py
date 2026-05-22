@@ -9,9 +9,8 @@ df = pd.read_csv("dataset.csv")
 X = df["content"]
 y = df["sentiment"]
 
-# Balance the dataset to handle class imbalance
 min_count = y.value_counts().min()
-max_count = min(y.value_counts().max(), min_count * 10)  # cap at 10x minority
+max_count = min(y.value_counts().max(), min_count * 10) 
 
 balanced_dfs = []
 for label in y.unique():
