@@ -14,7 +14,6 @@ def load_model():
 
 model, vectorizer = load_model()
 
-# All 13 labels from the dataset
 mood_music = {
     "happiness":  ("🎶 You're feeling great!",      ["Pop hits", "Party songs", "Dance music"]),
     "sadness":    ("🎧 Take it slow",               ["Soft acoustic", "Emotional songs", "Lo-fi beats"]),
@@ -38,16 +37,14 @@ if st.button("🎯 Recommend Music"):
         st.warning("⚠️ Please enter something!")
     else:
         vec = vectorizer.transform([user_input])
-        emotion = model.predict(vec)[0]
+        emotion = model.predict(vec)[0].strip().lower()
 
-        # Show confidence scores
         proba = model.predict_proba(vec)[0]
         confidence = max(proba) * 100
         top3 = sorted(zip(model.classes_, proba), key=lambda x: x[1], reverse=True)[:3]
 
         st.success(f"🧠 Detected Mood: **{emotion.capitalize()}** ({confidence:.0f}% confidence)")
 
-        # Show top 3 mood probabilities
         with st.expander("📊 See mood breakdown"):
             for label, prob in top3:
                 st.progress(float(prob), text=f"{label.capitalize()}: {prob*100:.1f}%")
