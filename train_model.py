@@ -30,12 +30,12 @@ y_balanced = balanced_df["sentiment"]
 vectorizer = CountVectorizer(ngram_range=(1, 2), max_features=50000)
 X_vec = vectorizer.fit_transform(X_balanced)
 
-model = MultinomialNB(class_weight=None)
+model = MultinomialNB()
 model.fit(X_vec, y_balanced)
 
 pickle.dump(model, open("model.pkl", "wb"))
 pickle.dump(vectorizer, open("vectorizer.pkl", "wb"))
 
-print("✅ Model trained and saved!")
+print("Model trained and saved!")
 print(f"   Classes: {list(model.classes_)}")
 print(f"   Training samples: {len(y_balanced)}")
